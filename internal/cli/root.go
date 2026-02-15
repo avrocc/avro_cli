@@ -12,9 +12,10 @@ import (
 // NewRootCommand creates the root cobra command with dual-mode dispatch.
 func NewRootCommand(exec *executor.Executor) *cobra.Command {
 	root := &cobra.Command{
-		Use:   "avro",
-		Short: "Avro - personal dev toolbox",
-		Long:  "A personal dev toolbox CLI with interactive TUI mode.\nRun 'avro' without arguments to launch the interactive TUI.",
+		Use:     "avro",
+		Short:   "Avro - personal dev toolbox",
+		Long:    "A personal dev toolbox CLI with interactive TUI mode.\nRun 'avro' without arguments to launch the interactive TUI.",
+		Version: Version,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// If stdin is not a terminal, show help instead of TUI
 			if !term.IsTerminal(int(os.Stdin.Fd())) {
@@ -26,6 +27,7 @@ func NewRootCommand(exec *executor.Executor) *cobra.Command {
 		SilenceErrors: true,
 	}
 
+	root.SetVersionTemplate("avro {{.Version}}\n")
 	BuildCobraTree(root, exec)
 	return root
 }
