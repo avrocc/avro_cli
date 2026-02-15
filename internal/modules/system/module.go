@@ -12,5 +12,5 @@ var category = domain.Category{
 }
 
 func init() {
-	registry.Global().Register(infoCmd, envCmd, pathCmd)
+	registry.Global().Register(infoCmd, envCmd, pathCmd, updateCmd)
 }
