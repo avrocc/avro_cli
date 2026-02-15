@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/sahilm/fuzzy"
 )
 
 var (
@@ -111,6 +113,46 @@ func (r *Registry) Search(query string) []domain.CommandDescriptor {
 		}
 	}
 	return out
+}
+
+// commandSource implements fuzzy.Source over a slice of CommandDescriptors.
+type commandSource []domain.CommandDescriptor
+
+func (s commandSource) String(i int) string { return s[i].FullName() }
+func (s commandSource) Len() int            { return len(s) }
+
+// FuzzySearch returns commands ranked by fuzzy match quality.
+func (r *Registry) FuzzySearch(query string) []FuzzyResult {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	if query == "" {
+		out := make([]FuzzyResult, len(r.commands))
+		for i, c := range r.commands {
+			out[i] = FuzzyResult{Command: c}
+		}
+		return out
+	}
+
+	src := commandSource(r.commands)
+	matches := fuzzy.FindFrom(query, src)
+
+	out := make([]FuzzyResult, len(matches))
+	for i, m := range matches {
+		out[i] = FuzzyResult{
+			Command:        r.commands[m.Index],
+			MatchedIndexes: m.MatchedIndexes,
+			Score:          m.Score,
+		}
+	}
+	return out
+}
+
+// FuzzyResult holds a command and its fuzzy match metadata.
+type FuzzyResult struct {
+	Command        domain.CommandDescriptor
+	MatchedIndexes []int
+	Score          int
 }
 
 func containsAlias(aliases []string, name string) bool {

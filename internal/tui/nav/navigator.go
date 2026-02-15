@@ -35,6 +35,13 @@ func New() *Navigator {
 	}
 }
 
+// NewWithInitial creates a navigator starting on a custom screen.
+func NewWithInitial(screen Screen, title string) *Navigator {
+	return &Navigator{
+		stack: []Entry{{Screen: screen, Title: title}},
+	}
+}
+
 // Current returns the top entry.
 func (n *Navigator) Current() Entry {
 	return n.stack[len(n.stack)-1]

@@ -27,6 +27,19 @@ func NewRootCommand(exec *executor.Executor) *cobra.Command {
 		SilenceErrors: true,
 	}
 
+	paletteCmd := &cobra.Command{
+		Use:     "palette",
+		Aliases: []string{"p"},
+		Short:   "Launch command palette",
+		Long:    "Launch a fuzzy-search command palette to find and execute any registered command.",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return tui.RunPalette()
+		},
+		SilenceUsage:  true,
+		SilenceErrors: true,
+	}
+
+	root.AddCommand(paletteCmd)
 	root.SetVersionTemplate("avro {{.Version}}\n")
 	BuildCobraTree(root, exec)
 	return root

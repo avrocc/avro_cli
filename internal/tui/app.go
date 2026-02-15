@@ -71,6 +71,11 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 		case "esc":
+			current := m.nav.Current().Screen
+			// Let search screen handle its own esc (standalone quit vs pop)
+			if current == nav.SearchScreen {
+				break
+			}
 			if m.nav.Pop() {
 				return m, nil
 			}
@@ -139,4 +144,21 @@ func Run() error {
 	p := tea.NewProgram(newAppModel(), tea.WithAltScreen())
 	_, err := p.Run()
 	return err
+}
+
+// RunPalette starts the TUI in palette mode (search screen only).
+func RunPalette() error {
+	p := tea.NewProgram(newPaletteModel(), tea.WithAltScreen())
+	_, err := p.Run()
+	return err
+}
+
+func newPaletteModel() appModel {
+	exec := executor.New(shell.New(), fs.New(), net.New())
+
+	return appModel{
+		nav:    nav.NewWithInitial(nav.SearchScreen, "Palette"),
+		exec:   exec,
+		search: screens.NewPaletteSearchModel(exec),
+	}
 }
