@@ -76,10 +76,10 @@ public static class MainWindow
             themeApplicator.ApplyTheme(selectedTheme);
         };
         
-        // Live preview on Enter key
-        radioGroup.KeyDown += (sender, args) =>
+        // Intercept Enter key on Dialog level before it reaches OK button
+        dialog.KeyDown += (sender, args) =>
         {
-            if (args.KeyCode == KeyCode.Enter)
+            if (args.KeyCode == KeyCode.Enter && radioGroup.HasFocus)
             {
                 var selectedTheme = themes[radioGroup.SelectedItem];
                 themeApplicator.ApplyTheme(selectedTheme);
