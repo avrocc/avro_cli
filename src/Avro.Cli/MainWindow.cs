@@ -61,7 +61,9 @@ public static class MainWindow
             Y = Pos.Center()
         };
 
-        top.Add(menuBar, label, statusBar);
+        top.Add(menuBar);
+        top.Add(label);
+        top.Add(statusBar);
     }
 
     private static void ShowThemeSelector(IThemeManager themeManager, Themes.IThemeApplicator themeApplicator)
