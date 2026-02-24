@@ -6,7 +6,7 @@ public static class MainWindow
 {
     public static void Configure(Toplevel top, IThemeManager themeManager, Themes.IThemeApplicator themeApplicator)
     {
-        top.ColorScheme = Colors.ColorSchemes["Base"];
+        // Don't set ColorScheme here - let ApplyTheme handle it
 
         var menuBar = new MenuBar
         {

@@ -21,10 +21,11 @@ if (Directory.Exists(themesDirectory))
 
 Application.Init();
 
-// Initialize color schemes AFTER Application.Init()
+MainWindow.Configure(Application.Top!, themeManager, themeApplicator);
+
+// Apply theme AFTER UI is configured
 themeApplicator.ApplyTheme(themeManager.CurrentTheme);
 themeManager.ThemeChanged += (_, theme) => themeApplicator.ApplyTheme(theme);
 
-MainWindow.Configure(Application.Top!, themeManager, themeApplicator);
 Application.Run();
 Application.Shutdown();
