@@ -23,7 +23,7 @@ public static class MainWindow
                 }),
                 new MenuBarItem("_Appearance", new MenuItem[]
                 {
-                    new ("_Themes", "", () => ShowThemeSelector(window, themeManager, themeApplicator))
+                    new MenuBarItem("_Themes", BuildThemeSubmenus(themeManager, themeApplicator))
                 })
             ]
         };
@@ -40,63 +40,33 @@ public static class MainWindow
         window.Add(label);
     }
 
-    private static void ShowThemeSelector(Window parentWindow, IThemeManager themeManager, IThemeApplicator themeApplicator)
+    private static MenuItem[] BuildThemeSubmenus(IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
-        var dialog = new Dialog
+        var themes = themeManager.AvailableThemes;
+        var darkThemes = themes.Where(t => t.Category == ThemeCategory.Dark).OrderBy(t => t.Name).ToArray();
+        var lightThemes = themes.Where(t => t.Category == ThemeCategory.Light).OrderBy(t => t.Name).ToArray();
+
+        var items = new List<MenuItem>();
+
+        if (darkThemes.Length > 0)
         {
-            Title = "Select Theme",
-            Width = Dim.Percent(60),
-            Height = Dim.Percent(60)
-        };
+            items.Add(new MenuBarItem("_Dark", darkThemes.Select(t => CreateThemeMenuItem(t, themeManager, themeApplicator)).ToArray()));
+        }
 
-        var themes = themeManager.AvailableThemes.ToArray();
-        var themeNames = themes.Select(t => t.Name).ToList();
-        var currentIndex = Array.FindIndex(themes, t => t.Name == themeManager.CurrentTheme.Name);
-        if (currentIndex < 0) currentIndex = 0;
-
-        var listView = new ListView
+        if (lightThemes.Length > 0)
         {
-            X = 1,
-            Y = 1,
-            Width = Dim.Fill(2),
-            Height = Dim.Fill(3),
-            CanFocus = true,
-            Source = new ListWrapper<string>(new System.Collections.ObjectModel.ObservableCollection<string>(themeNames))
-        };
-        listView.SelectedItem = currentIndex;
+            items.Add(new MenuBarItem("_Light", lightThemes.Select(t => CreateThemeMenuItem(t, themeManager, themeApplicator)).ToArray()));
+        }
 
-        // Live preview on arrow key navigation
-        listView.SelectedItemChanged += (sender, args) =>
+        return items.ToArray();
+    }
+
+    private static MenuItem CreateThemeMenuItem(ThemeDefinition theme, IThemeManager themeManager, IThemeApplicator themeApplicator)
+    {
+        return new MenuItem(theme.Name, "", () =>
         {
-            if (args.Item >= 0 && args.Item < themes.Length)
-            {
-                themeApplicator.ApplyTheme(themes[args.Item]);
-            }
-        };
-
-        // Enter key = apply and close
-        listView.OpenSelectedItem += (sender, args) =>
-        {
-            var selectedTheme = themes[listView.SelectedItem];
-            themeManager.SetTheme(selectedTheme.Name);
-            Application.RequestStop();
-        };
-
-        var cancelButton = new Button
-        {
-            Text = "Cancel",
-            X = Pos.Center(),
-            Y = Pos.AnchorEnd(1)
-        };
-
-        cancelButton.Accepting += (sender, args) =>
-        {
-            themeApplicator.ApplyTheme(themeManager.CurrentTheme);
-            Application.RequestStop();
-        };
-
-        dialog.Add(listView, cancelButton);
-        Application.Run(dialog);
-        dialog.Dispose();
+            themeManager.SetTheme(theme.Name);
+            themeApplicator.ApplyTheme(theme);
+        });
     }
 }

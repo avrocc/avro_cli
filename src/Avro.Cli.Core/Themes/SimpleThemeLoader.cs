@@ -39,6 +39,7 @@ public sealed class SimpleThemeLoader : IThemeLoader
         {
             Name = data.GetValueOrDefault("name", "Unknown"),
             Author = data.GetValueOrDefault("author", "Unknown"),
+            Category = ParseCategory(data.GetValueOrDefault("category", "dark")),
             Base = ParseColorScheme(sections.GetValueOrDefault("base", new())),
             Menu = ParseColorScheme(sections.GetValueOrDefault("menu", new())),
             Dialog = ParseColorScheme(sections.GetValueOrDefault("dialog", new())),
@@ -87,5 +88,12 @@ public sealed class SimpleThemeLoader : IThemeLoader
     private static ThemeColor ParseColor(string hex)
     {
         return ThemeColor.FromHex(hex);
+    }
+
+    private static ThemeCategory ParseCategory(string value)
+    {
+        return value.Equals("light", StringComparison.OrdinalIgnoreCase)
+            ? ThemeCategory.Light
+            : ThemeCategory.Dark;
     }
 }

@@ -1,7 +1,7 @@
 # Tokyo Night Theme
 name = Tokyo Night
 author = Avro CLI
-
+category = dark
 [base]
 normal = #a9b1d6
 focus = #c0caf5

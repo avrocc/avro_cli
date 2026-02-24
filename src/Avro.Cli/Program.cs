@@ -17,6 +17,7 @@ themesDirectory = Path.GetFullPath(themesDirectory);
 if (Directory.Exists(themesDirectory))
 {
     themeManager.LoadThemes(themesDirectory);
+    themeManager.SetTheme("Tokyo Night");
 }
 
 // v2 legacy static pattern (still works)

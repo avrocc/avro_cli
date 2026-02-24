@@ -1,7 +1,7 @@
 # Rose Pine Theme
 name = Rose Pine
 author = Avro CLI
-
+category = dark
 [base]
 normal = #e0def4
 focus = #ffffff

@@ -1,7 +1,7 @@
 # Nord Theme
 name = Nord
 author = Avro CLI
-
+category = dark
 [base]
 normal = #d8dee9
 focus = #eceff4

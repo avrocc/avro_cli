@@ -46,6 +46,7 @@ public sealed class ThemeManager : IThemeManager
         {
             Name = "Default",
             Author = "Avro CLI",
+            Category = ThemeCategory.Light,
             Base = new ColorSchemeDefinition
             {
                 Normal = new ThemeColor(128, 128, 128),

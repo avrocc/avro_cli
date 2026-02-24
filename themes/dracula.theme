@@ -1,7 +1,7 @@
 # Dracula Theme
 name = Dracula
 author = Avro CLI
-
+category = dark
 [base]
 normal = #f8f8f2
 focus = #ffffff
