@@ -11,14 +11,35 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
         var errorScheme = CreateColorScheme(theme.Error);
         var topLevelScheme = CreateColorScheme(theme.TopLevel);
         
-        Colors.ColorSchemes["Base"] = baseScheme;
-        Colors.ColorSchemes["Menu"] = menuScheme;
-        Colors.ColorSchemes["Dialog"] = dialogScheme;
-        Colors.ColorSchemes["Error"] = errorScheme;
-        Colors.ColorSchemes["TopLevel"] = topLevelScheme;
+        // Ensure color schemes exist
+        if (!Colors.ColorSchemes.ContainsKey("Base"))
+            Colors.ColorSchemes.Add("Base", baseScheme);
+        else
+            Colors.ColorSchemes["Base"] = baseScheme;
+            
+        if (!Colors.ColorSchemes.ContainsKey("Menu"))
+            Colors.ColorSchemes.Add("Menu", menuScheme);
+        else
+            Colors.ColorSchemes["Menu"] = menuScheme;
+            
+        if (!Colors.ColorSchemes.ContainsKey("Dialog"))
+            Colors.ColorSchemes.Add("Dialog", dialogScheme);
+        else
+            Colors.ColorSchemes["Dialog"] = dialogScheme;
+            
+        if (!Colors.ColorSchemes.ContainsKey("Error"))
+            Colors.ColorSchemes.Add("Error", errorScheme);
+        else
+            Colors.ColorSchemes["Error"] = errorScheme;
+            
+        if (!Colors.ColorSchemes.ContainsKey("TopLevel"))
+            Colors.ColorSchemes.Add("TopLevel", topLevelScheme);
+        else
+            Colors.ColorSchemes["TopLevel"] = topLevelScheme;
         
         // Update all existing views
-        UpdateViewColors(Application.Top);
+        if (Application.Top != null)
+            UpdateViewColors(Application.Top);
     }
     
     private static void UpdateViewColors(View? view)

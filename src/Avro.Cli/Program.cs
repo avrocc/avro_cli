@@ -21,6 +21,7 @@ if (Directory.Exists(themesDirectory))
 
 Application.Init();
 
+// Initialize color schemes AFTER Application.Init()
 themeApplicator.ApplyTheme(themeManager.CurrentTheme);
 themeManager.ThemeChanged += (_, theme) => themeApplicator.ApplyTheme(theme);
 
