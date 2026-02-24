@@ -1,60 +1,50 @@
+using Avro.Cli.Core.Themes;
+
 namespace Avro.Cli.Themes;
 
 public sealed class TerminalGuiThemeApplicator : IThemeApplicator
 {
-    public void ApplyTheme(Core.Themes.ThemeDefinition theme)
+    private View? _rootView;
+    private ColorScheme? _baseScheme;
+    private ColorScheme? _menuScheme;
+    private ColorScheme? _dialogScheme;
+    private ColorScheme? _topLevelScheme;
+
+    public void SetRootView(View rootView)
     {
-        // Terminal.Gui v2 supports True Color!
-        var baseScheme = CreateColorScheme(theme.Base);
-        var menuScheme = CreateColorScheme(theme.Menu);
-        var dialogScheme = CreateColorScheme(theme.Dialog);
-        var errorScheme = CreateColorScheme(theme.Error);
-        var topLevelScheme = CreateColorScheme(theme.TopLevel);
-        
-        // Ensure color schemes exist
-        if (!Colors.ColorSchemes.ContainsKey("Base"))
-            Colors.ColorSchemes.Add("Base", baseScheme);
-        else
-            Colors.ColorSchemes["Base"] = baseScheme;
-            
-        if (!Colors.ColorSchemes.ContainsKey("Menu"))
-            Colors.ColorSchemes.Add("Menu", menuScheme);
-        else
-            Colors.ColorSchemes["Menu"] = menuScheme;
-            
-        if (!Colors.ColorSchemes.ContainsKey("Dialog"))
-            Colors.ColorSchemes.Add("Dialog", dialogScheme);
-        else
-            Colors.ColorSchemes["Dialog"] = dialogScheme;
-            
-        if (!Colors.ColorSchemes.ContainsKey("Error"))
-            Colors.ColorSchemes.Add("Error", errorScheme);
-        else
-            Colors.ColorSchemes["Error"] = errorScheme;
-            
-        if (!Colors.ColorSchemes.ContainsKey("TopLevel"))
-            Colors.ColorSchemes.Add("TopLevel", topLevelScheme);
-        else
-            Colors.ColorSchemes["TopLevel"] = topLevelScheme;
+        _rootView = rootView;
+    }
+
+    public void ApplyTheme(ThemeDefinition theme)
+    {
+        // Terminal.Gui v2 supports True Color (24-bit RGB)!
+        _baseScheme = CreateColorScheme(theme.Base);
+        _menuScheme = CreateColorScheme(theme.Menu);
+        _dialogScheme = CreateColorScheme(theme.Dialog);
+        _topLevelScheme = CreateColorScheme(theme.TopLevel);
         
         // Update all existing views
-        if (Application.Top != null)
-            UpdateViewColors(Application.Top);
+        if (_rootView != null)
+        {
+            UpdateViewColors(_rootView);
+        }
     }
     
-    private static void UpdateViewColors(View? view)
+    private void UpdateViewColors(View? view)
     {
         if (view == null) return;
         
         // Apply color schemes based on view type
-        if (view is MenuBar)
-            view.ColorScheme = Colors.ColorSchemes["Menu"];
-        else if (view is Dialog)
-            view.ColorScheme = Colors.ColorSchemes["Dialog"];
-        else if (view is Toplevel)
-            view.ColorScheme = Colors.ColorSchemes["TopLevel"];
-        else
-            view.ColorScheme = Colors.ColorSchemes["Base"];
+        if (_baseScheme != null && _menuScheme != null && _dialogScheme != null && _topLevelScheme != null)
+        {
+            view.ColorScheme = view switch
+            {
+                MenuBar => _menuScheme,
+                Dialog => _dialogScheme,
+                Window => _topLevelScheme,
+                _ => _baseScheme
+            };
+        }
         
         // Recursively update children
         foreach (var subview in view.Subviews)
@@ -63,21 +53,25 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
         }
     }
 
-    private static ColorScheme CreateColorScheme(Core.Themes.ColorSchemeDefinition def)
+    private static ColorScheme CreateColorScheme(ColorSchemeDefinition def)
     {
         return new ColorScheme
         {
-            Normal = new Terminal.Gui.Attribute(MapColor(def.Normal), MapColor(def.Background)),
-            Focus = new Terminal.Gui.Attribute(MapColor(def.Focus), MapColor(def.Background)),
-            HotNormal = new Terminal.Gui.Attribute(MapColor(def.HotNormal), MapColor(def.Background)),
-            HotFocus = new Terminal.Gui.Attribute(MapColor(def.HotFocus), MapColor(def.Background)),
-            Disabled = new Terminal.Gui.Attribute(MapColor(def.Disabled), MapColor(def.Background))
+            Normal = CreateAttribute(def.Normal, def.Background),
+            Focus = CreateAttribute(def.Focus, def.Background),
+            HotNormal = CreateAttribute(def.HotNormal, def.Background),
+            HotFocus = CreateAttribute(def.HotFocus, def.Background),
+            Disabled = CreateAttribute(def.Disabled, def.Background)
         };
     }
 
-    private static Color MapColor(Core.Themes.ThemeColor color)
+    private static Terminal.Gui.Attribute CreateAttribute(ThemeColor fg, ThemeColor bg)
     {
-        // Terminal.Gui v2 True Color support
-        return new Color(color.R, color.G, color.B);
+        // Try using Attribute.Make with 24-bit color values
+        // Terminal.Gui v2 should support this
+        var foreground = Color.FromArgb(255, fg.R, fg.G, fg.B);
+        var background = Color.FromArgb(255, bg.R, bg.G, bg.B);
+        
+        return new Terminal.Gui.Attribute(foreground, background);
     }
 }
