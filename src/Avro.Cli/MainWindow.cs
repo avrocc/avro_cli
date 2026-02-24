@@ -50,52 +50,34 @@ public static class MainWindow
         };
 
         var themes = themeManager.AvailableThemes.ToArray();
-        var themeNames = themes.Select(t => t.Name).ToArray();
+        var themeNames = themes.Select(t => t.Name).ToList();
         var currentIndex = Array.FindIndex(themes, t => t.Name == themeManager.CurrentTheme.Name);
         if (currentIndex < 0) currentIndex = 0;
 
-        var radioGroup = new RadioGroup
+        var listView = new ListView
         {
             X = 1,
             Y = 1,
             Width = Dim.Fill(2),
-            Height = Dim.Fill(2),
-            RadioLabels = themeNames,
-            CanFocus = true
+            Height = Dim.Fill(3),
+            CanFocus = true,
+            Source = new ListWrapper<string>(new System.Collections.ObjectModel.ObservableCollection<string>(themeNames))
         };
+        listView.SelectedItem = currentIndex;
 
-        if (currentIndex >= 0 && currentIndex < themeNames.Length)
+        // Live preview on arrow key navigation
+        listView.SelectedItemChanged += (sender, args) =>
         {
-            radioGroup.SelectedItem = currentIndex;
-        }
-
-        // Live preview on selection change (mouse click)
-        radioGroup.SelectedItemChanged += (sender, args) =>
-        {
-            var selectedTheme = themes[args.SelectedItem];
-            themeApplicator.ApplyTheme(selectedTheme);
-        };
-        
-        // Handle arrow keys on KeyUp (after RadioGroup processed the key)
-        radioGroup.KeyUp += (sender, args) =>
-        {
-            if (args.KeyCode is KeyCode.CursorUp or KeyCode.CursorDown or KeyCode.Space or KeyCode.Enter)
+            if (args.Item >= 0 && args.Item < themes.Length)
             {
-                var selectedTheme = themes[radioGroup.SelectedItem];
-                themeApplicator.ApplyTheme(selectedTheme);
+                themeApplicator.ApplyTheme(themes[args.Item]);
             }
         };
 
-        var okButton = new Button
+        // Enter key = apply and close
+        listView.OpenSelectedItem += (sender, args) =>
         {
-            Text = "OK",
-            X = Pos.Center() - 10,
-            Y = Pos.AnchorEnd(1)
-        };
-
-        okButton.Accepting += (sender, args) =>
-        {
-            var selectedTheme = themes[radioGroup.SelectedItem];
+            var selectedTheme = themes[listView.SelectedItem];
             themeManager.SetTheme(selectedTheme.Name);
             Application.RequestStop();
         };
@@ -103,18 +85,17 @@ public static class MainWindow
         var cancelButton = new Button
         {
             Text = "Cancel",
-            X = Pos.Center() + 2,
+            X = Pos.Center(),
             Y = Pos.AnchorEnd(1)
         };
 
         cancelButton.Accepting += (sender, args) =>
         {
-            // Revert to original theme
             themeApplicator.ApplyTheme(themeManager.CurrentTheme);
             Application.RequestStop();
         };
 
-        dialog.Add(radioGroup, okButton, cancelButton);
+        dialog.Add(listView, cancelButton);
         Application.Run(dialog);
         dialog.Dispose();
     }
