@@ -1,0 +1,43 @@
+# Dracula Theme
+name = Dracula
+author = Avro CLI
+
+[base]
+normal = #f8f8f2
+focus = #ffffff
+hot_normal = #ff79c6
+hot_focus = #ff79c6
+disabled = #6272a4
+background = #282a36
+
+[menu]
+normal = #f8f8f2
+focus = #282a36
+hot_normal = #8be9fd
+hot_focus = #8be9fd
+disabled = #6272a4
+background = #44475a
+
+[dialog]
+normal = #f8f8f2
+focus = #282a36
+hot_normal = #8be9fd
+hot_focus = #8be9fd
+disabled = #6272a4
+background = #44475a
+
+[error]
+normal = #ffffff
+focus = #f1fa8c
+hot_normal = #f1fa8c
+hot_focus = #f1fa8c
+disabled = #808080
+background = #ff5555
+
+[toplevel]
+normal = #f8f8f2
+focus = #ffffff
+hot_normal = #ff79c6
+hot_focus = #ff79c6
+disabled = #6272a4
+background = #282a36

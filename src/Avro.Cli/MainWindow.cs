@@ -4,7 +4,6 @@ public static class MainWindow
 {
     public static void Configure(Toplevel top)
     {
-        ApplyTheme();
         top.ColorScheme = Colors.Base;
 
         var statusItem = new StatusItem(Key.Null, "Ready", null);
@@ -58,56 +57,6 @@ public static class MainWindow
         };
 
         top.Add(menuBar, label, statusBar);
-    }
-
-    private static void ApplyTheme()
-    {
-        var driver = Application.Driver;
-
-        Colors.Base = new ColorScheme
-        {
-            Normal = driver.MakeAttribute(Color.Gray, Color.Black),
-            Focus = driver.MakeAttribute(Color.White, Color.Black),
-            HotNormal = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            HotFocus = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.Black)
-        };
-
-        Colors.Menu = new ColorScheme
-        {
-            Normal = driver.MakeAttribute(Color.White, Color.DarkGray),
-            Focus = driver.MakeAttribute(Color.Black, Color.Gray),
-            HotNormal = driver.MakeAttribute(Color.BrightMagenta, Color.DarkGray),
-            HotFocus = driver.MakeAttribute(Color.BrightMagenta, Color.Gray),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.DarkGray)
-        };
-
-        Colors.Dialog = new ColorScheme
-        {
-            Normal = driver.MakeAttribute(Color.White, Color.DarkGray),
-            Focus = driver.MakeAttribute(Color.Black, Color.Gray),
-            HotNormal = driver.MakeAttribute(Color.BrightCyan, Color.DarkGray),
-            HotFocus = driver.MakeAttribute(Color.BrightCyan, Color.Gray),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.DarkGray)
-        };
-
-        Colors.Error = new ColorScheme
-        {
-            Normal = driver.MakeAttribute(Color.White, Color.Red),
-            Focus = driver.MakeAttribute(Color.BrightYellow, Color.Red),
-            HotNormal = driver.MakeAttribute(Color.BrightYellow, Color.Red),
-            HotFocus = driver.MakeAttribute(Color.BrightYellow, Color.BrightRed),
-            Disabled = driver.MakeAttribute(Color.Gray, Color.Red)
-        };
-
-        Colors.TopLevel = new ColorScheme
-        {
-            Normal = driver.MakeAttribute(Color.Gray, Color.Black),
-            Focus = driver.MakeAttribute(Color.White, Color.Black),
-            HotNormal = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            HotFocus = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.Black)
-        };
     }
 
     private static void SetStatus(StatusItem item, string message)
