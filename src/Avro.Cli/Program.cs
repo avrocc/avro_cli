@@ -22,14 +22,19 @@ if (Directory.Exists(themesDirectory))
 // v2 legacy static pattern (still works)
 Application.Init();
 
-// Set root view for theme applicator - use Application.Top
-themeApplicator.SetRootView(Application.Top!);
+// Create window (Application.Top may be null in 2.0.0-prealpha)
+var window = new Window { Title = "Avro CLI (Esc to quit)" };
 
-MainWindow.Configure(Application.Top!, themeManager, themeApplicator);
+// Set root view for theme applicator
+themeApplicator.SetRootView(window);
+
+MainWindow.Configure(window, themeManager, themeApplicator);
 
 // Apply theme after UI is configured
 themeApplicator.ApplyTheme(themeManager.CurrentTheme);
 themeManager.ThemeChanged += (_, theme) => themeApplicator.ApplyTheme(theme);
 
-Application.Run();
+Application.Run(window);
+
+window.Dispose();
 Application.Shutdown();

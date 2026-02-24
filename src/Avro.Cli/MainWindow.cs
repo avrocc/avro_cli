@@ -5,11 +5,11 @@ namespace Avro.Cli;
 
 public static class MainWindow
 {
-    public static void Configure(Toplevel top, IThemeManager themeManager, IThemeApplicator themeApplicator)
+    public static void Configure(Window window, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
-        if (top == null)
+        if (window == null)
         {
-            throw new ArgumentNullException(nameof(top), "Toplevel is null!");
+            throw new ArgumentNullException(nameof(window), "Window is null!");
         }
         
         // MenuBar
@@ -23,7 +23,7 @@ public static class MainWindow
                 }),
                 new MenuBarItem("_Appearance", new MenuItem[]
                 {
-                    new ("_Themes", "", () => ShowThemeSelector(top, themeManager, themeApplicator))
+                    new ("_Themes", "", () => ShowThemeSelector(window, themeManager, themeApplicator))
                 })
             ]
         };
@@ -36,11 +36,11 @@ public static class MainWindow
             Y = Pos.Center()
         };
 
-        top.Add(menu);
-        top.Add(label);
+        window.Add(menu);
+        window.Add(label);
     }
 
-    private static void ShowThemeSelector(Toplevel parentWindow, IThemeManager themeManager, IThemeApplicator themeApplicator)
+    private static void ShowThemeSelector(Window parentWindow, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
         var dialog = new Dialog
         {
