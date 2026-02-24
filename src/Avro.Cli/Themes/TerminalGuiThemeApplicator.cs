@@ -44,6 +44,9 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
                 Window => _topLevelScheme,
                 _ => _baseScheme
             };
+            
+            // Force redraw after color change
+            view.SetNeedsDraw();
         }
         
         // Recursively update children
