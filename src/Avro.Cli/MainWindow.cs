@@ -79,21 +79,10 @@ public static class MainWindow
         // Handle arrow keys on KeyUp (after RadioGroup processed the key)
         radioGroup.KeyUp += (sender, args) =>
         {
-            if (args.KeyCode == KeyCode.CursorUp || args.KeyCode == KeyCode.CursorDown)
+            if (args.KeyCode is KeyCode.CursorUp or KeyCode.CursorDown or KeyCode.Space or KeyCode.Enter)
             {
                 var selectedTheme = themes[radioGroup.SelectedItem];
                 themeApplicator.ApplyTheme(selectedTheme);
-            }
-        };
-        
-        // Intercept Enter on Dialog level
-        dialog.KeyDown += (sender, args) =>
-        {
-            if (args.KeyCode == KeyCode.Enter && radioGroup.HasFocus)
-            {
-                var selectedTheme = themes[radioGroup.SelectedItem];
-                themeApplicator.ApplyTheme(selectedTheme);
-                args.Handled = true;
             }
         };
 
@@ -101,8 +90,7 @@ public static class MainWindow
         {
             Text = "OK",
             X = Pos.Center() - 10,
-            Y = Pos.AnchorEnd(1),
-            IsDefault = true
+            Y = Pos.AnchorEnd(1)
         };
 
         okButton.Accepting += (sender, args) =>
