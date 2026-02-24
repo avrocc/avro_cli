@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Avro.Cli.Core/Avro.Cli.Core.csproj" />
+    <Project Path="src/Avro.Cli/Avro.Cli.csproj" />
+  </Folder>
+</Solution>

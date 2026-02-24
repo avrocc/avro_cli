@@ -1,0 +1,33 @@
+version: '3'
+
+vars:
+  SOLUTION: Avro.Cli.slnx
+  CLI_PROJECT: src/Avro.Cli/Avro.Cli.csproj
+  INSTALL_DIR: '{{.HOME}}/.avro/avro_cli'
+  RID: osx-arm64
+
+tasks:
+  build:
+    desc: Build solution
+    cmds:
+      - dotnet build {{.SOLUTION}}
+
+  deploy:
+    desc: Build and deploy avro CLI locally
+    cmds:
+      - >-
+        dotnet publish {{.CLI_PROJECT}}
+        -c Release
+        -r {{.RID}}
+        --self-contained true
+        -p:PublishSingleFile=true
+        -p:IncludeNativeLibrariesForSelfExtract=true
+        -p:DebugType=none
+        -p:DebugSymbols=false
+        -o {{.INSTALL_DIR}}
+      - echo "Deployed to {{.INSTALL_DIR}}/avro"
+
+  run:
+    desc: Run TUI in debug mode
+    cmds:
+      - dotnet run --project {{.CLI_PROJECT}}

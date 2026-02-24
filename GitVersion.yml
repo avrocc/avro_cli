@@ -1,0 +1,25 @@
+workflow: GitHubFlow/v1
+next-version: 0.1.0
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatch
+tag-prefix: '[vV]?'
+
+branches:
+  main:
+    regex: ^master$|^main$
+    mode: ContinuousDelivery
+    label: ''
+    increment: Patch
+    source-branches: ['feature', 'pull-request']
+  feature:
+    regex: ^features?[/-]
+    mode: ManualDeployment
+    label: '{BranchName}'
+    increment: Inherit
+    source-branches: ['main']
+  pull-request:
+    regex: ^(pull|pull\-requests|pr)[/-]
+    mode: ContinuousDelivery
+    label: PullRequest{Number}
+    increment: Inherit
+    source-branches: ['main']

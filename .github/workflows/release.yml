@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    runs-on: ubuntu-24.04
+    outputs:
+      semVer: ${{ steps.gitversion.outputs.semVer }}
+      assemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}
+      assemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}
+      informationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.3.3
+        with:
+          versionSpec: '6.6.x'
+
+      - name: Determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4.3.3
+        with:
+          useConfigFile: true
+
+  publish:
+    needs: version
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            artifact: avro-cli-win-x64
+            archive: zip
+          - rid: linux-x64
+            artifact: avro-cli-linux-x64
+            archive: tar
+          - rid: linux-arm64
+            artifact: avro-cli-linux-arm64
+            archive: tar
+          - rid: osx-x64
+            artifact: avro-cli-osx-x64
+            archive: tar
+          - rid: osx-arm64
+            artifact: avro-cli-osx-arm64
+            archive: tar
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: >-
+          dotnet publish src/Avro.Cli/Avro.Cli.csproj
+          -c Release
+          -r ${{ matrix.rid }}
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:DebugType=none
+          -p:DebugSymbols=false
+          -p:Version=${{ needs.version.outputs.semVer }}
+          -p:AssemblyVersion=${{ needs.version.outputs.assemblySemVer }}
+          -p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }}
+          -p:InformationalVersion=${{ needs.version.outputs.informationalVersion }}
+          -o ./publish
+
+      - name: Package (zip)
+        if: matrix.archive == 'zip'
+        run: cd publish && zip -r ../${{ matrix.artifact }}.zip .
+
+      - name: Package (tar.gz)
+        if: matrix.archive == 'tar'
+        run: cd publish && tar -czf ../${{ matrix.artifact }}.tar.gz .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.${{ matrix.archive == 'zip' && 'zip' || 'tar.gz' }}
+          retention-days: 1
+
+  release:
+    needs: [version, publish]
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ needs.version.outputs.semVer }}
+          generate_release_notes: true
+          files: artifacts/*
