@@ -71,65 +71,42 @@ public static class MainWindow
         var currentIndex = themes.FindIndex(t => t.Name == themeManager.CurrentTheme.Name);
         var originalTheme = themeManager.CurrentTheme;
         
-        var dialog = new Dialog("Select Theme", 60, 18);
+        var dialog = new Dialog("Select Theme", 50, Math.Min(themes.Count + 8, 20));
         
-        var label = new Label("Use ↑↓ to preview, Enter to apply, Esc to cancel")
+        var label = new Label("Choose theme (arrow keys preview):")
         {
             X = 1,
             Y = 1
         };
         
-        var listView = new ListView(themes.Select(t => t.Name).ToList())
+        var radioGroup = new RadioGroup(themes.Select(t => NStack.ustring.Make(t.Name)).ToArray())
         {
             X = 1,
             Y = 3,
-            Width = Dim.Fill(1),
-            Height = Dim.Fill(2),
-            SelectedItem = currentIndex >= 0 ? currentIndex : 0,
-            AllowsMarking = false
+            SelectedItem = currentIndex >= 0 ? currentIndex : 0
         };
         
-        // Live preview with OpenSelectedItem
-        listView.OpenSelectedItem += (args) =>
+        // Live preview on radio button change
+        radioGroup.SelectedItemChanged += (prevIndex) =>
         {
-            var selectedTheme = themes[listView.SelectedItem];
-            themeManager.SetTheme(selectedTheme.Name);
-            SetStatus(statusItem, $"Theme: {selectedTheme.Name}");
-            Application.RequestStop();
-        };
-        
-        // Try keypress for arrow keys preview
-        var lastSelectedItem = listView.SelectedItem;
-        dialog.KeyPress += (args) =>
-        {
-            if (args.KeyEvent.Key == Key.CursorUp || args.KeyEvent.Key == Key.CursorDown)
+            var selectedIndex = radioGroup.SelectedItem;
+            if (selectedIndex >= 0 && selectedIndex < themes.Count)
             {
-                Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(50), (_) =>
-                {
-                    if (listView.SelectedItem != lastSelectedItem && 
-                        listView.SelectedItem >= 0 && 
-                        listView.SelectedItem < themes.Count)
-                    {
-                        lastSelectedItem = listView.SelectedItem;
-                        var previewTheme = themes[listView.SelectedItem];
-                        themeApplicator.ApplyTheme(previewTheme);
-                        Application.Refresh();
-                    }
-                    return false;
-                });
+                var previewTheme = themes[selectedIndex];
+                themeApplicator.ApplyTheme(previewTheme);
+                Application.Refresh();
             }
         };
         
-        var okButton = new Button("_OK")
+        var okButton = new Button("_OK", is_default: true)
         {
-            X = Pos.Center() - 10,
-            Y = Pos.Bottom(dialog) - 3,
-            IsDefault = true
+            X = Pos.Center() - 8,
+            Y = Pos.Bottom(dialog) - 3
         };
         
         okButton.Clicked += () =>
         {
-            var selectedTheme = themes[listView.SelectedItem];
+            var selectedTheme = themes[radioGroup.SelectedItem];
             themeManager.SetTheme(selectedTheme.Name);
             themeApplicator.ApplyTheme(selectedTheme);
             SetStatus(statusItem, $"Theme: {selectedTheme.Name}");
@@ -144,12 +121,11 @@ public static class MainWindow
         
         cancelButton.Clicked += () =>
         {
-            // Restore original theme on cancel
             themeApplicator.ApplyTheme(originalTheme);
             Application.RequestStop();
         };
         
-        dialog.Add(label, listView, okButton, cancelButton);
+        dialog.Add(label, radioGroup, okButton, cancelButton);
         
         Application.Run(dialog);
     }
