@@ -10,12 +10,19 @@ var services = new ServiceCollection()
 var themeManager = services.GetRequiredService<IThemeManager>();
 var themeApplicator = services.GetRequiredService<IThemeApplicator>();
 
+// Load themes from themes directory
+var themesDirectory = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "themes");
+if (Directory.Exists(themesDirectory))
+{
+    themeManager.LoadThemes(themesDirectory);
+}
+
 Application.UseSystemConsole = true;
 Application.Init();
 
 themeApplicator.ApplyTheme(themeManager.CurrentTheme);
 themeManager.ThemeChanged += (_, theme) => themeApplicator.ApplyTheme(theme);
 
-MainWindow.Configure(Application.Top);
+MainWindow.Configure(Application.Top, themeManager, themeApplicator);
 Application.Run();
 Application.Shutdown();

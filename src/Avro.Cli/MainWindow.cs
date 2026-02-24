@@ -1,8 +1,10 @@
+using Avro.Cli.Core.Themes;
+
 namespace Avro.Cli;
 
 public static class MainWindow
 {
-    public static void Configure(Toplevel top)
+    public static void Configure(Toplevel top, IThemeManager themeManager, Themes.IThemeApplicator themeApplicator)
     {
         top.ColorScheme = Colors.Base;
 
@@ -35,6 +37,19 @@ public static class MainWindow
             [
                 new MenuItem("_Pods", "", () => SetStatus(statusItem, "Kubernetes Pods — coming soon"))
             ]),
+            new MenuBarItem("_Appearance",
+            [
+                new MenuBarItem("_Themes",
+                [
+                    new MenuBarItem("_Mode",
+                    [
+                        new MenuItem("_Auto", "", () => SetStatus(statusItem, "Auto mode — coming soon")),
+                        new MenuItem("_Dark", "", () => SetStatus(statusItem, "Dark mode — coming soon")),
+                        new MenuItem("_Light", "", () => SetStatus(statusItem, "Light mode — coming soon"))
+                    ]),
+                    .. CreateThemeMenuItems(themeManager, themeApplicator, statusItem)
+                ])
+            ]),
             new MenuBarItem("_Help",
             [
                 new MenuItem("_Documentation", "", () => SetStatus(statusItem, "Documentation — coming soon")),
@@ -57,6 +72,22 @@ public static class MainWindow
         };
 
         top.Add(menuBar, label, statusBar);
+    }
+
+    private static MenuItem[] CreateThemeMenuItems(IThemeManager themeManager, Themes.IThemeApplicator themeApplicator, StatusItem statusItem)
+    {
+        return themeManager.AvailableThemes
+            .Select(theme => new MenuItem(
+                theme.Name,
+                "",
+                () =>
+                {
+                    themeManager.SetTheme(theme.Name);
+                    themeApplicator.ApplyTheme(theme);
+                    SetStatus(statusItem, $"Theme changed to {theme.Name}");
+                    Application.Refresh();
+                }))
+            .ToArray();
     }
 
     private static void SetStatus(StatusItem item, string message)
