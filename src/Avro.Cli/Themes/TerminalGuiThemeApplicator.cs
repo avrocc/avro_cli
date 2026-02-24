@@ -11,6 +11,31 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
         Colors.Dialog = CreateColorScheme(driver, theme.Dialog);
         Colors.Error = CreateColorScheme(driver, theme.Error);
         Colors.TopLevel = CreateColorScheme(driver, theme.TopLevel);
+        
+        // Update all existing views
+        UpdateViewColors(Application.Top);
+        Application.Refresh();
+    }
+    
+    private static void UpdateViewColors(View? view)
+    {
+        if (view == null) return;
+        
+        // Apply color schemes based on view type
+        if (view is MenuBar)
+            view.ColorScheme = Colors.Menu;
+        else if (view is Dialog)
+            view.ColorScheme = Colors.Dialog;
+        else if (view is Toplevel)
+            view.ColorScheme = Colors.TopLevel;
+        else
+            view.ColorScheme = Colors.Base;
+        
+        // Recursively update children
+        foreach (var subview in view.Subviews)
+        {
+            UpdateViewColors(subview);
+        }
     }
 
     private static ColorScheme CreateColorScheme(ConsoleDriver driver, Core.Themes.ColorSchemeDefinition def)

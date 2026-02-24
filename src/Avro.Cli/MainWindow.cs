@@ -93,8 +93,10 @@ public static class MainWindow
             if (selectedIndex >= 0 && selectedIndex < themes.Count)
             {
                 var previewTheme = themes[selectedIndex];
+                label.Text = $"Applying: {previewTheme.Name}...";
                 themeApplicator.ApplyTheme(previewTheme);
                 Application.Refresh();
+                label.Text = $"Preview: {previewTheme.Name}";
             }
         };
         
