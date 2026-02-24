@@ -13,16 +13,16 @@ background = #282a36
 [menu]
 normal = #f8f8f2
 focus = #282a36
-hot_normal = #8be9fd
-hot_focus = #8be9fd
+hot_normal = #50fa7b
+hot_focus = #ff79c6
 disabled = #6272a4
 background = #44475a
 
 [dialog]
 normal = #f8f8f2
 focus = #282a36
-hot_normal = #8be9fd
-hot_focus = #8be9fd
+hot_normal = #50fa7b
+hot_focus = #ff79c6
 disabled = #6272a4
 background = #44475a
 
