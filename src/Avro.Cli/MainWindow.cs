@@ -7,6 +7,11 @@ public static class MainWindow
 {
     public static void Configure(Toplevel top, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
+        if (top == null)
+        {
+            throw new ArgumentNullException(nameof(top), "Toplevel is null!");
+        }
+        
         // MenuBar
         var menu = new MenuBar
         {
@@ -23,10 +28,6 @@ public static class MainWindow
             ]
         };
 
-        // StatusBar
-        var statusBar = new StatusBar();
-        statusBar.Add(new Shortcut(KeyCode.Q | KeyCode.CtrlMask, "Quit", () => Application.RequestStop()));
-
         // Main label
         var label = new Label
         {
@@ -36,7 +37,6 @@ public static class MainWindow
         };
 
         top.Add(menu);
-        top.Add(statusBar);
         top.Add(label);
     }
 
