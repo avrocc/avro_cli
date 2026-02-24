@@ -48,14 +48,18 @@ public static class MainWindow
 
         var items = new List<MenuItem>();
 
+        // Dark section header
         if (darkThemes.Length > 0)
         {
-            items.Add(new MenuBarItem("_Dark", darkThemes.Select(t => CreateThemeMenuItem(t, themeManager, themeApplicator)).ToArray()));
+            items.Add(new MenuItem("── Dark ──", "", null) { CanExecute = () => false });
+            items.AddRange(darkThemes.Select(t => CreateThemeMenuItem(t, themeManager, themeApplicator)));
         }
 
+        // Light section header
         if (lightThemes.Length > 0)
         {
-            items.Add(new MenuBarItem("_Light", lightThemes.Select(t => CreateThemeMenuItem(t, themeManager, themeApplicator)).ToArray()));
+            items.Add(new MenuItem("── Light ──", "", null) { CanExecute = () => false });
+            items.AddRange(lightThemes.Select(t => CreateThemeMenuItem(t, themeManager, themeApplicator)));
         }
 
         return items.ToArray();
