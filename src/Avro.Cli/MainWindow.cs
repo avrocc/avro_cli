@@ -39,16 +39,7 @@ public static class MainWindow
             ]),
             new MenuBarItem("_Appearance",
             [
-                new MenuBarItem("_Themes",
-                [
-                    new MenuBarItem("_Mode",
-                    [
-                        new MenuItem("_Auto", "", () => SetStatus(statusItem, "Auto mode — coming soon")),
-                        new MenuItem("_Dark", "", () => SetStatus(statusItem, "Dark mode — coming soon")),
-                        new MenuItem("_Light", "", () => SetStatus(statusItem, "Light mode — coming soon"))
-                    ]),
-                    .. CreateThemeMenuItems(themeManager, themeApplicator, statusItem)
-                ])
+                .. CreateThemeMenuItems(themeManager, themeApplicator, statusItem)
             ]),
             new MenuBarItem("_Help",
             [
@@ -76,17 +67,25 @@ public static class MainWindow
 
     private static MenuItem[] CreateThemeMenuItems(IThemeManager themeManager, Themes.IThemeApplicator themeApplicator, StatusItem statusItem)
     {
+        var currentTheme = themeManager.CurrentTheme.Name;
+        
         return themeManager.AvailableThemes
-            .Select(theme => new MenuItem(
-                theme.Name,
-                "",
-                () =>
-                {
-                    themeManager.SetTheme(theme.Name);
-                    themeApplicator.ApplyTheme(theme);
-                    SetStatus(statusItem, $"Theme changed to {theme.Name}");
-                    Application.Refresh();
-                }))
+            .Select(theme =>
+            {
+                var isActive = theme.Name == currentTheme;
+                var prefix = isActive ? "✓ " : "  ";
+                
+                return new MenuItem(
+                    $"{prefix}{theme.Name}",
+                    "",
+                    () =>
+                    {
+                        themeManager.SetTheme(theme.Name);
+                        themeApplicator.ApplyTheme(theme);
+                        SetStatus(statusItem, $"Theme: {theme.Name}");
+                        Application.Refresh();
+                    });
+            })
             .ToArray();
     }
 
