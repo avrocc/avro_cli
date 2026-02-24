@@ -7,9 +7,6 @@ public static class MainWindow
 {
     public static void Configure(Toplevel top, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
-        // Set title
-        top.Title = "Avro CLI (Esc to quit)";
-        
         // MenuBar
         var menu = new MenuBar
         {
