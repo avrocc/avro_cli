@@ -5,8 +5,11 @@ namespace Avro.Cli;
 
 public static class MainWindow
 {
-    public static void Configure(Window window, IThemeManager themeManager, IThemeApplicator themeApplicator)
+    public static void Configure(Toplevel top, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
+        // Set title
+        top.Title = "Avro CLI (Esc to quit)";
+        
         // MenuBar
         var menu = new MenuBar
         {
@@ -18,7 +21,7 @@ public static class MainWindow
                 }),
                 new MenuBarItem("_Appearance", new MenuItem[]
                 {
-                    new ("_Themes", "", () => ShowThemeSelector(window, themeManager, themeApplicator))
+                    new ("_Themes", "", () => ShowThemeSelector(top, themeManager, themeApplicator))
                 })
             ]
         };
@@ -35,10 +38,10 @@ public static class MainWindow
             Y = Pos.Center()
         };
 
-        window.Add(menu, statusBar, label);
+        top.Add(menu, statusBar, label);
     }
 
-    private static void ShowThemeSelector(Window parentWindow, IThemeManager themeManager, IThemeApplicator themeApplicator)
+    private static void ShowThemeSelector(Toplevel parentWindow, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
         var dialog = new Dialog
         {
