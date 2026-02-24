@@ -32,16 +32,19 @@ task deploy                                    # publish + deploy locally
 Single namespace `Terminal.Gui`. Static application lifecycle:
 
 ```csharp
+Application.UseSystemConsole = true;   // REQUIRED on macOS — fixes dropdown rendering
 Application.Init();
-Application.Run(new MainWindow());
+MainWindow.Configure(Application.Top); // configure Application.Top directly
+Application.Run();
 Application.Shutdown();
 ```
 
-- `Toplevel` — root view (MainWindow inherits from this)
-- `Window` — framed container added inside Toplevel
+- **`UseSystemConsole = true`** — switches from CursesDriver to NetDriver; without this, box-drawing characters render double-width on macOS and dropdowns break
+- `Application.Top` — use directly, do NOT subclass `Toplevel`
+- `MainWindow` — static class with `Configure(Toplevel top)` method
 - `MenuBar` — horizontal menu with `MenuBarItem[]` / `MenuItem[]`
 - `StatusBar` — bottom bar with `StatusItem[]`
-- Separators in menus: `null` entry
+- **Avoid `null` separators** in menus — causes rendering artifacts; use separate top-level menus instead
 
 ## Conventions
 
