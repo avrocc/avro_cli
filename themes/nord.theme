@@ -1,0 +1,43 @@
+# Nord Theme
+name = Nord
+author = Avro CLI
+
+[base]
+normal = #d8dee9
+focus = #eceff4
+hot_normal = #88c0d0
+hot_focus = #88c0d0
+disabled = #4c566a
+background = #2e3440
+
+[menu]
+normal = #eceff4
+focus = #2e3440
+hot_normal = #81a1c1
+hot_focus = #81a1c1
+disabled = #4c566a
+background = #3b4252
+
+[dialog]
+normal = #eceff4
+focus = #2e3440
+hot_normal = #81a1c1
+hot_focus = #81a1c1
+disabled = #4c566a
+background = #3b4252
+
+[error]
+normal = #ffffff
+focus = #ebcb8b
+hot_normal = #ebcb8b
+hot_focus = #ebcb8b
+disabled = #808080
+background = #bf616a
+
+[toplevel]
+normal = #d8dee9
+focus = #eceff4
+hot_normal = #88c0d0
+hot_focus = #88c0d0
+disabled = #4c566a
+background = #2e3440

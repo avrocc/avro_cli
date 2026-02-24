@@ -1,0 +1,43 @@
+# Rose Pine Theme
+name = Rose Pine
+author = Avro CLI
+
+[base]
+normal = #e0def4
+focus = #ffffff
+hot_normal = #c4a7e7
+hot_focus = #c4a7e7
+disabled = #6e6a86
+background = #191724
+
+[menu]
+normal = #e0def4
+focus = #191724
+hot_normal = #9ccfd8
+hot_focus = #9ccfd8
+disabled = #6e6a86
+background = #1f1d2e
+
+[dialog]
+normal = #e0def4
+focus = #191724
+hot_normal = #9ccfd8
+hot_focus = #9ccfd8
+disabled = #6e6a86
+background = #1f1d2e
+
+[error]
+normal = #ffffff
+focus = #f6c177
+hot_normal = #f6c177
+hot_focus = #f6c177
+disabled = #808080
+background = #eb6f92
+
+[toplevel]
+normal = #e0def4
+focus = #ffffff
+hot_normal = #c4a7e7
+hot_focus = #c4a7e7
+disabled = #6e6a86
+background = #191724

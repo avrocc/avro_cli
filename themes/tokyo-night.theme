@@ -1,0 +1,43 @@
+# Tokyo Night Theme
+name = Tokyo Night
+author = Avro CLI
+
+[base]
+normal = #a9b1d6
+focus = #c0caf5
+hot_normal = #bb9af7
+hot_focus = #bb9af7
+disabled = #565f89
+background = #1a1b26
+
+[menu]
+normal = #c0caf5
+focus = #1a1b26
+hot_normal = #7dcfff
+hot_focus = #7dcfff
+disabled = #565f89
+background = #24283b
+
+[dialog]
+normal = #c0caf5
+focus = #1a1b26
+hot_normal = #7dcfff
+hot_focus = #7dcfff
+disabled = #565f89
+background = #24283b
+
+[error]
+normal = #ffffff
+focus = #e0af68
+hot_normal = #e0af68
+hot_focus = #e0af68
+disabled = #808080
+background = #f7768e
+
+[toplevel]
+normal = #a9b1d6
+focus = #c0caf5
+hot_normal = #bb9af7
+hot_focus = #bb9af7
+disabled = #565f89
+background = #1a1b26

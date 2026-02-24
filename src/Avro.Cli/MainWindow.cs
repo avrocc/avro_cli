@@ -1,118 +1,109 @@
+using Avro.Cli.Core.Themes;
+using Avro.Cli.Themes;
+
 namespace Avro.Cli;
 
 public static class MainWindow
 {
-    public static void Configure(Toplevel top)
+    public static void Configure(Window window, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
-        ApplyTheme();
-        top.ColorScheme = Colors.Base;
-
-        var statusItem = new StatusItem(Key.Null, "Ready", null);
-
-        var menuBar = new MenuBar(
-        [
-            new MenuBarItem("_File",
-            [
-                new MenuItem("_New Session", "", () => SetStatus(statusItem, "New Session — coming soon")),
-                new MenuItem("_Open...", "", () => SetStatus(statusItem, "Open — coming soon")),
-                new MenuItem("_Save", "", () => SetStatus(statusItem, "Save — coming soon")),
-                new MenuItem("_Quit", "", () => Application.RequestStop())
-            ]),
-            new MenuBarItem("_Git",
-            [
-                new MenuItem("_Status", "", () => SetStatus(statusItem, "Git Status — coming soon")),
-                new MenuItem("_Log", "", () => SetStatus(statusItem, "Git Log — coming soon"))
-            ]),
-            new MenuBarItem("_Docker",
-            [
-                new MenuItem("_Containers", "", () => SetStatus(statusItem, "Docker Containers — coming soon")),
-                new MenuItem("_Images", "", () => SetStatus(statusItem, "Docker Images — coming soon"))
-            ]),
-            new MenuBarItem("_SSH",
-            [
-                new MenuItem("_Connect", "", () => SetStatus(statusItem, "SSH Connect — coming soon"))
-            ]),
-            new MenuBarItem("_K8s",
-            [
-                new MenuItem("_Pods", "", () => SetStatus(statusItem, "Kubernetes Pods — coming soon"))
-            ]),
-            new MenuBarItem("_Help",
-            [
-                new MenuItem("_Documentation", "", () => SetStatus(statusItem, "Documentation — coming soon")),
-                new MenuItem("Check for _Updates", "", () => SetStatus(statusItem, "Check for Updates — coming soon")),
-                new MenuItem("_About", "", () =>
-                    MessageBox.Query("About", "Avro CLI\n\nTerminal UI toolkit for DevOps", "_OK"))
-            ])
-        ]);
-
-        var statusBar = new StatusBar(
-        [
-            statusItem,
-            new StatusItem(Key.CtrlMask | Key.Q, "~^Q~ Quit", () => Application.RequestStop())
-        ]);
-
-        var label = new Label("Welcome to Avro CLI")
+        // MenuBar
+        var menu = new MenuBar
         {
+            Menus =
+            [
+                new MenuBarItem("_File", new MenuItem[]
+                {
+                    new ("_Quit", "", () => Application.RequestStop(), null, null, KeyCode.Q | KeyCode.CtrlMask)
+                }),
+                new MenuBarItem("_Appearance", new MenuItem[]
+                {
+                    new ("_Themes", "", () => ShowThemeSelector(window, themeManager, themeApplicator))
+                })
+            ]
+        };
+
+        // StatusBar
+        var statusBar = new StatusBar();
+        statusBar.Add(new Shortcut(KeyCode.Q | KeyCode.CtrlMask, "Quit", () => Application.RequestStop()));
+
+        // Main label
+        var label = new Label
+        {
+            Text = "Avro CLI - Your productivity companion",
             X = Pos.Center(),
             Y = Pos.Center()
         };
 
-        top.Add(menuBar, label, statusBar);
+        window.Add(menu, statusBar, label);
     }
 
-    private static void ApplyTheme()
+    private static void ShowThemeSelector(Window parentWindow, IThemeManager themeManager, IThemeApplicator themeApplicator)
     {
-        var driver = Application.Driver;
-
-        Colors.Base = new ColorScheme
+        var dialog = new Dialog
         {
-            Normal = driver.MakeAttribute(Color.Gray, Color.Black),
-            Focus = driver.MakeAttribute(Color.White, Color.Black),
-            HotNormal = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            HotFocus = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.Black)
+            Title = "Select Theme",
+            Width = Dim.Percent(60),
+            Height = Dim.Percent(60)
         };
 
-        Colors.Menu = new ColorScheme
+        var themes = themeManager.AvailableThemes.ToArray();
+        var themeNames = themes.Select(t => t.Name).ToArray();
+        var currentIndex = Array.FindIndex(themes, t => t.Name == themeManager.CurrentTheme.Name);
+        if (currentIndex < 0) currentIndex = 0;
+
+        var radioGroup = new RadioGroup
         {
-            Normal = driver.MakeAttribute(Color.White, Color.DarkGray),
-            Focus = driver.MakeAttribute(Color.Black, Color.Gray),
-            HotNormal = driver.MakeAttribute(Color.BrightMagenta, Color.DarkGray),
-            HotFocus = driver.MakeAttribute(Color.BrightMagenta, Color.Gray),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.DarkGray)
+            X = 1,
+            Y = 1,
+            Width = Dim.Fill(2),
+            Height = Dim.Fill(2),
+            RadioLabels = themeNames
         };
 
-        Colors.Dialog = new ColorScheme
+        if (currentIndex >= 0 && currentIndex < themeNames.Length)
         {
-            Normal = driver.MakeAttribute(Color.White, Color.DarkGray),
-            Focus = driver.MakeAttribute(Color.Black, Color.Gray),
-            HotNormal = driver.MakeAttribute(Color.BrightCyan, Color.DarkGray),
-            HotFocus = driver.MakeAttribute(Color.BrightCyan, Color.Gray),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.DarkGray)
+            radioGroup.SelectedItem = currentIndex;
+        }
+
+        // Live preview on selection change
+        radioGroup.SelectedItemChanged += (sender, args) =>
+        {
+            var selectedTheme = themes[args.SelectedItem];
+            themeApplicator.ApplyTheme(selectedTheme);
         };
 
-        Colors.Error = new ColorScheme
+        var okButton = new Button
         {
-            Normal = driver.MakeAttribute(Color.White, Color.Red),
-            Focus = driver.MakeAttribute(Color.BrightYellow, Color.Red),
-            HotNormal = driver.MakeAttribute(Color.BrightYellow, Color.Red),
-            HotFocus = driver.MakeAttribute(Color.BrightYellow, Color.BrightRed),
-            Disabled = driver.MakeAttribute(Color.Gray, Color.Red)
+            Text = "OK",
+            X = Pos.Center() - 10,
+            Y = Pos.AnchorEnd(1),
+            IsDefault = true
         };
 
-        Colors.TopLevel = new ColorScheme
+        okButton.Accepting += (sender, args) =>
         {
-            Normal = driver.MakeAttribute(Color.Gray, Color.Black),
-            Focus = driver.MakeAttribute(Color.White, Color.Black),
-            HotNormal = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            HotFocus = driver.MakeAttribute(Color.BrightMagenta, Color.Black),
-            Disabled = driver.MakeAttribute(Color.DarkGray, Color.Black)
+            var selectedTheme = themes[radioGroup.SelectedItem];
+            themeManager.SetTheme(selectedTheme.Name);
+            Application.RequestStop();
         };
-    }
 
-    private static void SetStatus(StatusItem item, string message)
-    {
-        item.Title = message;
-        Application.Refresh();
+        var cancelButton = new Button
+        {
+            Text = "Cancel",
+            X = Pos.Center() + 2,
+            Y = Pos.AnchorEnd(1)
+        };
+
+        cancelButton.Accepting += (sender, args) =>
+        {
+            // Revert to original theme
+            themeApplicator.ApplyTheme(themeManager.CurrentTheme);
+            Application.RequestStop();
+        };
+
+        dialog.Add(radioGroup, okButton, cancelButton);
+        Application.Run(dialog);
+        dialog.Dispose();
     }
 }
