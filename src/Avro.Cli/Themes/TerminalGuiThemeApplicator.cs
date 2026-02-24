@@ -4,17 +4,21 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
 {
     public void ApplyTheme(Core.Themes.ThemeDefinition theme)
     {
-        var driver = Application.Driver;
-
-        Colors.Base = CreateColorScheme(driver, theme.Base);
-        Colors.Menu = CreateColorScheme(driver, theme.Menu);
-        Colors.Dialog = CreateColorScheme(driver, theme.Dialog);
-        Colors.Error = CreateColorScheme(driver, theme.Error);
-        Colors.TopLevel = CreateColorScheme(driver, theme.TopLevel);
+        // Terminal.Gui v2 supports True Color!
+        var baseScheme = CreateColorScheme(theme.Base);
+        var menuScheme = CreateColorScheme(theme.Menu);
+        var dialogScheme = CreateColorScheme(theme.Dialog);
+        var errorScheme = CreateColorScheme(theme.Error);
+        var topLevelScheme = CreateColorScheme(theme.TopLevel);
+        
+        Colors.ColorSchemes["Base"] = baseScheme;
+        Colors.ColorSchemes["Menu"] = menuScheme;
+        Colors.ColorSchemes["Dialog"] = dialogScheme;
+        Colors.ColorSchemes["Error"] = errorScheme;
+        Colors.ColorSchemes["TopLevel"] = topLevelScheme;
         
         // Update all existing views
         UpdateViewColors(Application.Top);
-        Application.Refresh();
     }
     
     private static void UpdateViewColors(View? view)
@@ -23,13 +27,13 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
         
         // Apply color schemes based on view type
         if (view is MenuBar)
-            view.ColorScheme = Colors.Menu;
+            view.ColorScheme = Colors.ColorSchemes["Menu"];
         else if (view is Dialog)
-            view.ColorScheme = Colors.Dialog;
+            view.ColorScheme = Colors.ColorSchemes["Dialog"];
         else if (view is Toplevel)
-            view.ColorScheme = Colors.TopLevel;
+            view.ColorScheme = Colors.ColorSchemes["TopLevel"];
         else
-            view.ColorScheme = Colors.Base;
+            view.ColorScheme = Colors.ColorSchemes["Base"];
         
         // Recursively update children
         foreach (var subview in view.Subviews)
@@ -38,43 +42,21 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
         }
     }
 
-    private static ColorScheme CreateColorScheme(ConsoleDriver driver, Core.Themes.ColorSchemeDefinition def)
+    private static ColorScheme CreateColorScheme(Core.Themes.ColorSchemeDefinition def)
     {
         return new ColorScheme
         {
-            Normal = driver.MakeAttribute(MapColor(def.Normal), MapColor(def.Background)),
-            Focus = driver.MakeAttribute(MapColor(def.Focus), MapColor(def.Background)),
-            HotNormal = driver.MakeAttribute(MapColor(def.HotNormal), MapColor(def.Background)),
-            HotFocus = driver.MakeAttribute(MapColor(def.HotFocus), MapColor(def.Background)),
-            Disabled = driver.MakeAttribute(MapColor(def.Disabled), MapColor(def.Background))
+            Normal = new Terminal.Gui.Attribute(MapColor(def.Normal), MapColor(def.Background)),
+            Focus = new Terminal.Gui.Attribute(MapColor(def.Focus), MapColor(def.Background)),
+            HotNormal = new Terminal.Gui.Attribute(MapColor(def.HotNormal), MapColor(def.Background)),
+            HotFocus = new Terminal.Gui.Attribute(MapColor(def.HotFocus), MapColor(def.Background)),
+            Disabled = new Terminal.Gui.Attribute(MapColor(def.Disabled), MapColor(def.Background))
         };
     }
 
     private static Color MapColor(Core.Themes.ThemeColor color)
     {
-        var brightness = (color.R + color.G + color.B) / 3;
-        
-        if (brightness < 32) return Color.Black;
-        if (brightness > 224) return Color.White;
-        
-        if (color.R > color.G && color.R > color.B)
-            return brightness > 128 ? Color.BrightRed : Color.Red;
-        
-        if (color.G > color.R && color.G > color.B)
-            return brightness > 128 ? Color.BrightGreen : Color.Green;
-        
-        if (color.B > color.R && color.B > color.G)
-            return brightness > 128 ? Color.BrightBlue : Color.Blue;
-        
-        if (color.R > 100 && color.G > 100 && color.B < 100)
-            return Color.BrightYellow;
-        
-        if (color.R > 100 && color.B > 100 && color.G < 100)
-            return Color.BrightMagenta;
-        
-        if (color.G > 100 && color.B > 100 && color.R < 100)
-            return Color.BrightCyan;
-        
-        return brightness > 128 ? Color.Gray : Color.DarkGray;
+        // Terminal.Gui v2 True Color support
+        return new Color(color.R, color.G, color.B);
     }
 }

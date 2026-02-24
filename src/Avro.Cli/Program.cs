@@ -19,12 +19,11 @@ if (Directory.Exists(themesDirectory))
     themeManager.LoadThemes(themesDirectory);
 }
 
-Application.UseSystemConsole = true;
 Application.Init();
 
 themeApplicator.ApplyTheme(themeManager.CurrentTheme);
 themeManager.ThemeChanged += (_, theme) => themeApplicator.ApplyTheme(theme);
 
-MainWindow.Configure(Application.Top, themeManager, themeApplicator);
+MainWindow.Configure(Application.Top!, themeManager, themeApplicator);
 Application.Run();
 Application.Shutdown();
