@@ -68,10 +68,17 @@ public static class MainWindow
             radioGroup.SelectedItem = currentIndex;
         }
 
-        // Live preview on selection change
+        // Live preview on selection change (mouse click)
         radioGroup.SelectedItemChanged += (sender, args) =>
         {
             var selectedTheme = themes[args.SelectedItem];
+            themeApplicator.ApplyTheme(selectedTheme);
+        };
+        
+        // Live preview on Enter key
+        radioGroup.Accepting += (sender, args) =>
+        {
+            var selectedTheme = themes[radioGroup.SelectedItem];
             themeApplicator.ApplyTheme(selectedTheme);
         };
 
