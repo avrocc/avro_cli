@@ -60,7 +60,8 @@ public static class MainWindow
             Y = 1,
             Width = Dim.Fill(2),
             Height = Dim.Fill(2),
-            RadioLabels = themeNames
+            RadioLabels = themeNames,
+            CanFocus = true
         };
 
         if (currentIndex >= 0 && currentIndex < themeNames.Length)
@@ -68,7 +69,7 @@ public static class MainWindow
             radioGroup.SelectedItem = currentIndex;
         }
 
-        // Live preview on selection change (mouse click)
+        // Live preview on selection change (mouse click or arrow keys)
         radioGroup.SelectedItemChanged += (sender, args) =>
         {
             var selectedTheme = themes[args.SelectedItem];
@@ -76,10 +77,14 @@ public static class MainWindow
         };
         
         // Live preview on Enter key
-        radioGroup.Accepting += (sender, args) =>
+        radioGroup.KeyDown += (sender, args) =>
         {
-            var selectedTheme = themes[radioGroup.SelectedItem];
-            themeApplicator.ApplyTheme(selectedTheme);
+            if (args.KeyCode == KeyCode.Enter)
+            {
+                var selectedTheme = themes[radioGroup.SelectedItem];
+                themeApplicator.ApplyTheme(selectedTheme);
+                args.Handled = true;
+            }
         };
 
         var okButton = new Button
