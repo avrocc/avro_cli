@@ -69,14 +69,24 @@ public static class MainWindow
             radioGroup.SelectedItem = currentIndex;
         }
 
-        // Live preview on selection change (mouse click or arrow keys)
+        // Live preview on selection change (mouse click)
         radioGroup.SelectedItemChanged += (sender, args) =>
         {
             var selectedTheme = themes[args.SelectedItem];
             themeApplicator.ApplyTheme(selectedTheme);
         };
         
-        // Intercept Enter key on Dialog level before it reaches OK button
+        // Handle arrow keys on KeyUp (after RadioGroup processed the key)
+        radioGroup.KeyUp += (sender, args) =>
+        {
+            if (args.KeyCode == KeyCode.CursorUp || args.KeyCode == KeyCode.CursorDown)
+            {
+                var selectedTheme = themes[radioGroup.SelectedItem];
+                themeApplicator.ApplyTheme(selectedTheme);
+            }
+        };
+        
+        // Intercept Enter on Dialog level
         dialog.KeyDown += (sender, args) =>
         {
             if (args.KeyCode == KeyCode.Enter && radioGroup.HasFocus)
