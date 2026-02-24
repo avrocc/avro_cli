@@ -61,9 +61,9 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
         return new ColorScheme
         {
             Normal = CreateAttribute(def.Normal, def.Background),
-            Focus = CreateAttribute(def.Background, def.Focus),
+            Focus = CreateAttribute(def.Normal, def.Focus),
             HotNormal = CreateAttribute(def.HotNormal, def.Background),
-            HotFocus = CreateAttribute(def.Background, def.HotFocus),
+            HotFocus = CreateAttribute(def.HotNormal, def.Focus),
             Disabled = CreateAttribute(def.Disabled, def.Background)
         };
     }

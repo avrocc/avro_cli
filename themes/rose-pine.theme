@@ -12,7 +12,7 @@ background = #191724
 
 [menu]
 normal = #e0def4
-focus = #191724
+focus = #26233a
 hot_normal = #ebbcba
 hot_focus = #eb6f92
 disabled = #6e6a86
@@ -20,7 +20,7 @@ background = #1f1d2e
 
 [dialog]
 normal = #e0def4
-focus = #191724
+focus = #26233a
 hot_normal = #ebbcba
 hot_focus = #eb6f92
 disabled = #6e6a86
