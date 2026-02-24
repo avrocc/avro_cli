@@ -85,17 +85,38 @@ public static class MainWindow
             Y = 3,
             Width = Dim.Fill(1),
             Height = Dim.Fill(2),
-            SelectedItem = currentIndex >= 0 ? currentIndex : 0
+            SelectedItem = currentIndex >= 0 ? currentIndex : 0,
+            AllowsMarking = false
         };
         
-        // Live preview on selection change
-        listView.SelectedItemChanged += (args) =>
+        // Live preview with OpenSelectedItem
+        listView.OpenSelectedItem += (args) =>
         {
-            if (args.Item >= 0 && args.Item < themes.Count)
+            var selectedTheme = themes[listView.SelectedItem];
+            themeManager.SetTheme(selectedTheme.Name);
+            SetStatus(statusItem, $"Theme: {selectedTheme.Name}");
+            Application.RequestStop();
+        };
+        
+        // Try keypress for arrow keys preview
+        var lastSelectedItem = listView.SelectedItem;
+        dialog.KeyPress += (args) =>
+        {
+            if (args.KeyEvent.Key == Key.CursorUp || args.KeyEvent.Key == Key.CursorDown)
             {
-                var previewTheme = themes[args.Item];
-                themeApplicator.ApplyTheme(previewTheme);
-                Application.Refresh();
+                Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(50), (_) =>
+                {
+                    if (listView.SelectedItem != lastSelectedItem && 
+                        listView.SelectedItem >= 0 && 
+                        listView.SelectedItem < themes.Count)
+                    {
+                        lastSelectedItem = listView.SelectedItem;
+                        var previewTheme = themes[listView.SelectedItem];
+                        themeApplicator.ApplyTheme(previewTheme);
+                        Application.Refresh();
+                    }
+                    return false;
+                });
             }
         };
         
@@ -110,6 +131,7 @@ public static class MainWindow
         {
             var selectedTheme = themes[listView.SelectedItem];
             themeManager.SetTheme(selectedTheme.Name);
+            themeApplicator.ApplyTheme(selectedTheme);
             SetStatus(statusItem, $"Theme: {selectedTheme.Name}");
             Application.RequestStop();
         };

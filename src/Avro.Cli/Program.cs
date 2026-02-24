@@ -18,10 +18,6 @@ if (Directory.Exists(themesDirectory))
 {
     themeManager.LoadThemes(themesDirectory);
 }
-else
-{
-    Console.WriteLine($"Themes directory not found: {themesDirectory}");
-}
 
 Application.UseSystemConsole = true;
 Application.Init();
