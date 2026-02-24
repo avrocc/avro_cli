@@ -67,10 +67,9 @@ public sealed class TerminalGuiThemeApplicator : IThemeApplicator
 
     private static Terminal.Gui.Attribute CreateAttribute(ThemeColor fg, ThemeColor bg)
     {
-        // Try using Attribute.Make with 24-bit color values
-        // Terminal.Gui v2 should support this
-        var foreground = Color.FromArgb(255, fg.R, fg.G, fg.B);
-        var background = Color.FromArgb(255, bg.R, bg.G, bg.B);
+        // Terminal.Gui v2 True Color (24-bit RGB)
+        var foreground = new Color(fg.R, fg.G, fg.B);
+        var background = new Color(bg.R, bg.G, bg.B);
         
         return new Terminal.Gui.Attribute(foreground, background);
     }
