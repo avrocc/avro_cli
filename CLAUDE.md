@@ -1,10 +1,10 @@
 # Avro CLI
 
-.NET 10 Terminal.Gui v2 TUI application.
+.NET 9 Terminal.Gui v1 TUI application.
 
 ## Tech Stack
 
-- .NET 10 / Terminal.Gui `2.0.0-develop.5041`
+- .NET 9 / Terminal.Gui `1.19.0`
 - Microsoft.Extensions.DependencyInjection
 - Central Package Management (`Directory.Packages.props`)
 - Solution format: `.slnx` (XML)
@@ -24,21 +24,24 @@ Growth path: Core splits into Domain + Application + Infrastructure when needed.
 ```bash
 dotnet build Avro.Cli.slnx                    # build (warnings as errors)
 dotnet run --project src/Avro.Cli              # run TUI
+task deploy                                    # publish + deploy locally
 ```
 
-## Terminal.Gui v2 API
+## Terminal.Gui v1 API
 
-The legacy static `Application.Init()`/`Application.Shutdown()` is obsolete. Use:
+Single namespace `Terminal.Gui`. Static application lifecycle:
 
 ```csharp
-using var app = Application.Create().Init();
-app.Run(new MainWindow());
+Application.Init();
+Application.Run(new MainWindow());
+Application.Shutdown();
 ```
 
-Key namespaces (not `Terminal.Gui` root):
-- `Terminal.Gui.App` — `Application`, `IApplication`
-- `Terminal.Gui.ViewBase` — `View`, `Pos`, `Dim`
-- `Terminal.Gui.Views` — `Window`, `Label`, `Button`, etc.
+- `Toplevel` — root view (MainWindow inherits from this)
+- `Window` — framed container added inside Toplevel
+- `MenuBar` — horizontal menu with `MenuBarItem[]` / `MenuItem[]`
+- `StatusBar` — bottom bar with `StatusItem[]`
+- Separators in menus: `null` entry
 
 ## Conventions
 

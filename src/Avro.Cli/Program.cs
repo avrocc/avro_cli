@@ -5,5 +5,8 @@ var services = new ServiceCollection()
     .AddCliServices()
     .BuildServiceProvider();
 
-using var app = Application.Create().Init();
-app.Run(new MainWindow());
+Application.UseSystemConsole = true;
+Application.Init();
+MainWindow.Configure(Application.Top);
+Application.Run();
+Application.Shutdown();

@@ -25,6 +25,7 @@ tasks:
         -p:DebugType=none
         -p:DebugSymbols=false
         -o {{.INSTALL_DIR}}
+      - hash -r 2>/dev/null || true
       - echo "Deployed to {{.INSTALL_DIR}}/avro"
 
   run:
