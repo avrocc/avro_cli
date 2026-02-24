@@ -51,10 +51,8 @@ public static class MainWindow
             ]
         };
 
-        var statusBar = new StatusBar(
-        [
-            new Shortcut(Key.Q.WithCtrl, "Quit", () => Application.RequestStop())
-        ]);
+        var statusBar = new StatusBar();
+        statusBar.Add(new Shortcut(Key.Q.WithCtrl, "Quit", () => Application.RequestStop()));
 
         var label = new Label
         {
