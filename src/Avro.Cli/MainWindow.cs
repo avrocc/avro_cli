@@ -39,7 +39,7 @@ public static class MainWindow
             ]),
             new MenuBarItem("_Appearance",
             [
-                new MenuBarItem("_Themes", CreateThemeMenuItems(themeManager, themeApplicator, statusItem))
+                new MenuItem("Select _Theme...", "", () => ShowThemeSelector(themeManager, themeApplicator, statusItem))
             ]),
             new MenuBarItem("_Help",
             [
@@ -63,6 +63,73 @@ public static class MainWindow
         };
 
         top.Add(menuBar, label, statusBar);
+    }
+
+    private static void ShowThemeSelector(IThemeManager themeManager, Themes.IThemeApplicator themeApplicator, StatusItem statusItem)
+    {
+        var themes = themeManager.AvailableThemes.ToList();
+        var currentIndex = themes.FindIndex(t => t.Name == themeManager.CurrentTheme.Name);
+        var originalTheme = themeManager.CurrentTheme;
+        
+        var dialog = new Dialog("Select Theme", 60, 18);
+        
+        var label = new Label("Use ↑↓ to preview, Enter to apply, Esc to cancel")
+        {
+            X = 1,
+            Y = 1
+        };
+        
+        var listView = new ListView(themes.Select(t => t.Name).ToList())
+        {
+            X = 1,
+            Y = 3,
+            Width = Dim.Fill(1),
+            Height = Dim.Fill(2),
+            SelectedItem = currentIndex >= 0 ? currentIndex : 0
+        };
+        
+        // Live preview on selection change
+        listView.SelectedItemChanged += (args) =>
+        {
+            if (args.Item >= 0 && args.Item < themes.Count)
+            {
+                var previewTheme = themes[args.Item];
+                themeApplicator.ApplyTheme(previewTheme);
+                Application.Refresh();
+            }
+        };
+        
+        var okButton = new Button("_OK")
+        {
+            X = Pos.Center() - 10,
+            Y = Pos.Bottom(dialog) - 3,
+            IsDefault = true
+        };
+        
+        okButton.Clicked += () =>
+        {
+            var selectedTheme = themes[listView.SelectedItem];
+            themeManager.SetTheme(selectedTheme.Name);
+            SetStatus(statusItem, $"Theme: {selectedTheme.Name}");
+            Application.RequestStop();
+        };
+        
+        var cancelButton = new Button("_Cancel")
+        {
+            X = Pos.Center() + 3,
+            Y = Pos.Bottom(dialog) - 3
+        };
+        
+        cancelButton.Clicked += () =>
+        {
+            // Restore original theme on cancel
+            themeApplicator.ApplyTheme(originalTheme);
+            Application.RequestStop();
+        };
+        
+        dialog.Add(label, listView, okButton, cancelButton);
+        
+        Application.Run(dialog);
     }
 
     private static MenuItem[] CreateThemeMenuItems(IThemeManager themeManager, Themes.IThemeApplicator themeApplicator, StatusItem statusItem)

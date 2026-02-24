@@ -11,10 +11,16 @@ var themeManager = services.GetRequiredService<IThemeManager>();
 var themeApplicator = services.GetRequiredService<IThemeApplicator>();
 
 // Load themes from themes directory
-var themesDirectory = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "themes");
+var themesDirectory = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "themes");
+themesDirectory = Path.GetFullPath(themesDirectory);
+
 if (Directory.Exists(themesDirectory))
 {
     themeManager.LoadThemes(themesDirectory);
+}
+else
+{
+    Console.WriteLine($"Themes directory not found: {themesDirectory}");
 }
 
 Application.UseSystemConsole = true;
